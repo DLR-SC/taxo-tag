@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "taxo-tag"
+version = "1.0.0"
+description = "Tag documents with taxonomy terms using embeddings and a concept hierarchy"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Andreas Hamm", email = "andreas.hamm@dlr.de" },
+]
+keywords = ["taxonomy", "document-tagging", "embeddings", "sentence-transformers", "hierarchy"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "networkx==3.4.2",
+    "nltk==3.9.1",
+    "numpy==2.2.5",
+    "pandas==2.2.3",
+    "sentence_transformers==4.1.0",
+    "torch==2.6.0",
+    "transformers>=4.46.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build",
+    "twine",
+    "pytest",
+]
+
+[project.urls]
+Homepage = "https://gitlab.com/Gitlab/taxotagger"
+Repository = "https://gitlab.com/Gitlab/taxotagger"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/taxo"]

@@ -1,0 +1,17 @@
+schema_version: 1.0.0
+project:
+  name: taxo-tag
+  content_type: software
+ai_usage:
+  used: true
+  scope:
+    documentation: true
+    infrastructure: true
+  tools:
+    - name: Claude Code with local Ornith 1.5
+      type: agent
+      hosting: local
+  summary: Used to assist generation of documentation (docstrings, type hints, README.md) and uv compatible pyproject.toml
+declaration:
+  declared_by: Andreas Hamm
+  date: '2026-10-21'
