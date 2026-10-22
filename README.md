@@ -35,7 +35,25 @@ uv add taxo-tag
 ## Usage
 Note that while the package is called taxo-tag on PyPi, import it simply as `taxo`.
 
-(See also the included Jupyter notebook)
+Given a taxonomy (by this we mean a hierarchy of concepts, ordered in the structure of a directed acyclic graph (DAG)) - presented in tabular form as described below - and the text of a document, this package can be used to tag the document with the best-fitting taxonomy concepts.
+
+The table used to specify the taxonomy is expected to be a Pandas dataframe. Thus, it can be imported from several tabular sources like csv files or Excel sheets. An example is the file `media.xlsx` included in this repository.
+
+The table has one row for every node (concept) of the taxonomy. Formally, there is one special node needed, the so called root or top node, which is the ancestor of all other nodes in the hierarchy. (See the node with key `M00000000` in the media example.) 
+
+Each row of the table has to specify:
+- the concept's unique `key`
+- language dependent labels for the concept
+- short language dependent descriptions of the concept
+- the keys of the hierarchical `parents` of the concept 
+
+The parents' keys have to be given as a string that evaluates to a list in Python (e.g., `"['concept1', 'concept2']"`). In the case of a hierarchy that is a tree, every concept has of course only one parent.
+
+Given a 2-letter ISO code `xy` for a language, the row headers for labels and descriptions are `label_xy` and `description_xy`, respectively. The table is expected to have English entries (`en`) as default, and more entries for the other languages needed. The code in this package is also meant to handle German (`de`); other languages need small obvious modifications.
+
+Tagging is based on semantic similarity considerations as calculated by a Sentence Transformer model. Any model provided by the sentence_transformers package can be used. The small model `all-MiniLM-L6-v2` works well for English (but not so well for other languages).
+
+The code fragment below shows the principles of usage, finally executing the tagging by calling the method `identify_concepts` which has several tuning parameters which can be adapted to specific constellations and use cases. 
 
 ```python
 import networkx as nx
@@ -75,6 +93,8 @@ result = doc.identify_concepts(
 Each entry of `result` is a hierarchical path from the root to a concept, as a
 list of `(name, key)` pairs (optionally with an aggregated score appended).
 
+See also the included Jupyter notebook `usage.ipynb`.
+
 ## API
 
 ### `ConceptTaxonomy`
@@ -92,7 +112,7 @@ Holds the concept hierarchy and its embeddings.
 
 ### `TaxedDocument`
 
-Turns a document into a set of relevant concept paths.
+Prepares a document for concept identification.
 
 - `set_parameters(top_k=10, threshold=0.3, weight_dev=None, kparm=1.0)`
 - `score_concepts_overall()` / `score_concepts_sentencewise()`
@@ -102,21 +122,7 @@ Turns a document into a set of relevant concept paths.
 - `get_relevant_concepts(min_score=None, max_number=100)`
 - `identify_concepts(...)` — all of the above in one call
 
-## Development
-
-This project uses [uv](https://docs.astral.sh/uv/). After cloning:
-
-```bash
-# Create the virtual environment and install with dev extras
-uv sync --extra dev
-
-# Build the distribution
-uv build
-
-# Upload to PyPI (after an `uv login` / twine login)
-uv tool run twine upload dist/*
-```
 
 ## License
 
-MIT — DLR
+MIT — DLR. See LICENSE file.
