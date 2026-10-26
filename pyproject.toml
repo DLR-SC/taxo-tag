@@ -41,8 +41,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://gitlab.com/Gitlab/taxotagger"
-Repository = "https://gitlab.com/Gitlab/taxotagger"
+Homepage = "https://github.com/DLR-SC/taxo-tag"
+Repository = "https://github.com/DLR-SC/taxo-tag"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/taxo"]
