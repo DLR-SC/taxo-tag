@@ -3,12 +3,12 @@
 Tag documents with terms from a concept hierarchy (taxonomy) using sentence
 embeddings.
 
-`taxo` builds a hierarchy of concepts, embeds their descriptions in a shared
+`taxo` reads in a hierarchy of concepts, embeds their descriptions in a shared
 vector space, and then finds the concepts most related to a document. It can
 also aggregate sentence-level evidence along hierarchical paths to produce a
 consistent set of top-level tags.
 
-For the main ideas used in `taxo`, see
+For the main ideas used in `taxo-tag`, see
 ```
 @inproceedings{dlr190966,
            title = {Strategy Comparison for Semantic Zero-Shot Taxonomy Filters},
@@ -21,6 +21,8 @@ For the main ideas used in `taxo`, see
 ```
 
 ## Installation
+
+On Python >= 3.11:
 
 ```bash
 pip install taxo-tag
@@ -37,7 +39,22 @@ Note that while the package is called taxo-tag on PyPi, import it simply as `tax
 
 Given a taxonomy (by this we mean a hierarchy of concepts, ordered in the structure of a directed acyclic graph (DAG)) - presented in tabular form as described below - and the text of a document, this package can be used to tag the document with the best-fitting taxonomy concepts.
 
-The table used to specify the taxonomy is expected to be a Pandas dataframe. Thus, it can be imported from several tabular sources like csv files or Excel sheets. An example is the file `media.xlsx` included in this repository.
+The table used to specify the taxonomy is expected to be a Pandas dataframe. Thus, it can be imported from several tabular sources like csv files or Excel sheets. An example is the file `media.xlsx` included in this repository. It is based on the [IPTC media topics taxonomy](https://iptc.org/standards/media-topics/), a taxonomy frequently used for subject classification of news articles.
+
+The following short excerpt illustrates the structure:
+
+| key       | label_en                | description_en                                                                                                                  | label_de              | description_de                                                                                                                                                              | parents       |
+|-----------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| M00000000 | [TOP]                   |                                                                                                                                 | [TOP]                 |                                                                                                                                                                             | []            |
+| M05000000 | education               | All aspects of furthering knowledge, formally or informally                                                                     | Erziehung, Ausbildung | Alle Aspekte der Förderung von Wissen für den Menschen von der Geburt bis zum Tod.                                                                                          | ['M00000000'] |
+| M06000000 | environment             | All aspects of protection, damage, and condition of the ecosystem of the planet earth and its surroundings.                     | Umwelt                | Alle Aspekte des Schutzes, der Zerstörung und die Bedingungen des Ökosystems der Erde und ihrer Umgebung                                                                    | ['M00000000'] |
+| M07000000 | health                  | All aspects pertaining to the physical and mental welfare of living beings                                                      | Medizin, Gesundheit   | Alle Aspekte des körperlichen und geistigen Wohlbefindens von Menschen.                                                                                                     | ['M00000000'] |
+| M20000400 | school                  | A building or institution in which education is provided                                                                        | Schule                | Gebäude oder Einrichtung, wo verschiedenartige Ausbildung angeboten wird.                                                                                                   | ['M05000000'] |
+| M20000405 | college and university  | Institutions of higher learning that provide degrees in a course of study at the undergraduate, postgraduate or doctorate level | Hochschule            | Ausbildung oberhalb des zweiten Levels, meist erwartet von Fachhochschulen und Universitäten, die in einer professionellen Qualifikation oder einem akademischen Grad führt | ['M20000400'] |
+| M20000406 | college                 | Institution of higher learning, its specific scope is set differently in different countries                                    | Fachhochschule        | Institution der Lehre auf höherer Ebene, spezielle Form variiert von Land zu Land                                                                                           | ['M20000405'] |
+| M20000407 | university              | Institutions of higher learning capable of providing doctorate degrees                                                          | Universität           | Institution der Lehre auf höherer Ebene, geeignet um Doktoren- und Professorentitel etc. zu verleihen.                                                                      | ['M20000405'] |
+| M20000446 | diseases and conditions | Any harmful or destructive health condition affecting humans.                                                                   | Krankheit             | Jeder gesundheitsgefährdende oder zerstörerische Zustand                                                                                                                    | ['M07000000'] |
+
 
 The table has one row for every node (concept) of the taxonomy. Formally, there is one special node needed, the so called root or top node, which is the ancestor of all other nodes in the hierarchy. (See the node with key `M00000000` in the media example.) 
 
@@ -49,7 +66,7 @@ Each row of the table has to specify:
 
 The parents' keys have to be given as a string that evaluates to a list in Python (e.g., `"['concept1', 'concept2']"`). In the case of a hierarchy that is a tree, every concept has of course only one parent.
 
-Given a 2-letter ISO code `xy` for a language, the row headers for labels and descriptions are `label_xy` and `description_xy`, respectively. The table is expected to have English entries (`en`) as default, and more entries for the other languages needed. The code in this package is also meant to handle German (`de`); other languages need small obvious modifications.
+Given a 2-letter ISO code `xy` for a language, the row headers for labels and descriptions are `label_xy` and `description_xy`, respectively. The table is expected to have English entries (`en`) as default, and more entries for the other languages needed. The code in this package is also meant to handle German (`de`) in addition to English; other languages need small obvious modifications.
 
 Tagging is based on semantic similarity considerations as calculated by a Sentence Transformer model. Any model provided by the sentence_transformers package can be used. The small model `all-MiniLM-L6-v2` works well for English (but not so well for other languages).
 
@@ -77,16 +94,16 @@ tax.from_df(df)
 # Tag a document.
 doc = taxo.TaxedDocument(tax, text)
 result = doc.identify_concepts(
-    top_k=10,
-    min_similarity=0.25,
-    title_weight=2,
-    saturation=1.5,
-    min_agg=0.25,
-    top_percent=80,
-    second_percent=80,
-    max_baseconcepts=7,
-    max_paths=2,
-    with_scores=True,
+    top_k=10,               # concepts kept when checking similarity to text
+    min_similarity=0.25,    # minimum sentence-level similarity to be kept
+    title_weight=2,         # weight of the first sentence (the document title)
+    saturation=1.5,         # saturation parameter for score aggregation
+    min_agg=0.25,           # minimum aggregated score for a concept to be returned
+    top_percent=80,         # percentage kept when truncating the hierarchy on the top level
+    second_percent=80,      # percentage kept when truncating the hierarchy on the second level
+    max_baseconcepts=7,     # maximum number of returned (leaf) concepts
+    max_paths=2,            # number of paths to the root considered per concept
+    with_scores=True,       # include aggregated scores in the results
 )
 ```
 
