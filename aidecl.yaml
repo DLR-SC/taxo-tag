@@ -1,6 +1,6 @@
 schema_version: 1.0.0
 project:
-  name: taxo-tag
+  name: taxo
   content_type: software
 ai_usage:
   used: true

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "taxo-tag"
+name = "taxo"
 version = "1.0.0"
 description = "Tag documents with taxonomy terms using embeddings and a concept hierarchy"
 readme = "README.md"

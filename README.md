@@ -1,4 +1,4 @@
-# taxo-tag
+# taxo
 
 Tag documents with terms from a concept hierarchy (taxonomy) using sentence
 embeddings.
@@ -8,7 +8,7 @@ vector space, and then finds the concepts most related to a document. It can
 also aggregate sentence-level evidence along hierarchical paths to produce a
 consistent set of top-level tags.
 
-For the main ideas used in `taxo-tag`, see
+For the main ideas used in `taxo`, see
 ```
 @inproceedings{dlr190966,
            title = {Strategy Comparison for Semantic Zero-Shot Taxonomy Filters},
@@ -25,17 +25,17 @@ For the main ideas used in `taxo-tag`, see
 On Python >= 3.11:
 
 ```bash
-pip install taxo-tag
+pip install taxo
 ```
 
 This is a uv-style package, so `uv` works too:
 
 ```bash
-uv add taxo-tag
+uv add taxo
 ```
 
 ## Usage
-Note that while the package is called taxo-tag on PyPi, import it simply as `taxo`.
+The package is both installed and imported as `taxo`.
 
 Given a taxonomy (by this we mean a hierarchy of concepts, ordered in the structure of a directed acyclic graph (DAG)) - presented in tabular form as described below - and the text of a document, this package can be used to tag the document with the best-fitting taxonomy concepts.
 
