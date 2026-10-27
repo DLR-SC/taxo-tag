@@ -13,5 +13,9 @@ authors:
     email: andreas.hamm@dlr.de
     affiliation: German Aerospace Center (DLR)
     orcid: 'https://orcid.org/0000-0001-5854-851X'
-url: 'https://elib.dlr.de/190966/'
+url: 'https://github.com/DLR-SC/taxo-tag/'
+description: |
+  Tag documents with terms from a concept hierarchy (taxonomy) using sentence embeddings
+notes: |
+  See also 'https://elib.dlr.de/190966/'
 license: MIT
