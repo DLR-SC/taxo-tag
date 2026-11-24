@@ -112,6 +112,10 @@ class ConceptTaxonomy:
         else:
             self.describe_concepts(long=False)
         if transformer:
+            # Accept either an actual SentenceTransformer instance or a model
+            # name (str); convert names into an instance for downstream use.
+            if isinstance(transformer, str):
+                transformer = SentenceTransformer(transformer)
             self.transformer = transformer
             self.embed_concepts(transformer)
         if classifier:
